@@ -1,0 +1,59 @@
+---
+- name: Add docker repositories
+  ansible.builtin.yum_repository:
+    name: docker
+    description: docker
+    baseurl: https://download.docker.com/linux/centos/9/aarch64/stable
+    enabled: true
+
+- name: Add Docker GPG Key
+  ansible.builtin.rpm_key:
+    key: https://download.docker.com/linux/centos/gpg
+    state: present
+
+# - name: add docker-ce repo.
+#   shell: "yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo"
+#   args:
+#     chdir: "/etc/yum.repos.d"
+#     creates: docker-ce.repo
+
+- name: Add Docker CE repo
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+
+- name: Update package lists
+  ansible.builtin.yum:
+    update_cache: true
+
+- name: Install docker engine
+  ansible.builtin.package:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+
+- name: Install docker-compose
+  ansible.builtin.get_url:
+    url: https://github.com/docker/compose/releases/download/v2.29.1/docker-compose-darwin-aarch64
+    dest: /usr/local/bin/docker-compose
+    mode: '0755'
+
+- name: Ensure pip3 is installed
+  ansible.builtin.yum:
+    name: python3-pip
+    state: present
+
+# Pour que python puisse piloter le daemon docker (docker-py)
+- name: Docker python
+  ansible.builtin.pip:
+    name: docker-py
+    executable: /usr/bin/pip3
+    state: present
+
+- name: Enable and Start docker
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true

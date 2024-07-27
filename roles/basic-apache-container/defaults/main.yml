@@ -1,0 +1,9 @@
+---
+# defaults variables
+system_user: root
+webapp_port: 80
+apache_port: 80
+file_template: index.html.j2
+welcome: "{{ system_user }}"
+# Pour indiquer aux machines distantes d'utiliser python3 pour exécuter les scripts ansible (pour docker)
+ansible_python_interpreter: /usr/bin/python3

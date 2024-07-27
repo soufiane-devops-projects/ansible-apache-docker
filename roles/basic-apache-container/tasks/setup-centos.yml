@@ -1,0 +1,18 @@
+---
+# Setup centos 7 by adding all dependencies for this role
+- name: Check for the correct OS distributon and version
+  ansible.builtin.fail:
+    msg: The OS distributon should be centos 9
+  when: ansible_distribution != "CentOS" or ansible_distribution_major_version != "9"
+
+- name: Install some package and prerequisites
+  ansible.builtin.package: name={{ item }} state=present
+  with_items:
+    - epel-release
+    - wget
+    - git
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+    - python3
+    - python3-pip

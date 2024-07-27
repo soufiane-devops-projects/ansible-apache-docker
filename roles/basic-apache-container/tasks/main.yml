@@ -1,0 +1,21 @@
+---
+# tasks file for ansible-role-basic-apache-container
+- name: Setup CentOS
+  ansible.builtin.include_tasks: "setup-centos.yml"
+#- include_tasks: "setup-centos.yml"
+
+- ansible.builtin.include_tasks: "install-docker.yml"
+
+- name: Copy website file template
+  ansible.builtin.template:
+    src: "{{ file_template}}"
+    dest: "/home/{{ system_user }}/index.html"
+     
+- name: Create Apache container 
+  community.docker.docker_container:
+    name: webapp
+    image: httpd
+    ports:
+      - "{{ webapp_port }}:{{ apache_port }}"
+    volumes:
+      - "/home/{{ system_user }}/index.html:/usr/local/apache2/htdocs/index.html"
